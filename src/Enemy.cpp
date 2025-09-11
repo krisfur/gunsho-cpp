@@ -18,6 +18,10 @@ void StartEnemy::draw(const GameAssets& assets, float scale, float x_pos, float 
     DrawTexturePro(enemy_texture, {0, 0, (float)enemy_texture.width, (float)enemy_texture.height}, {x_pos, y_pos, sprite_width, sprite_height}, {0, 0}, 0, WHITE);
 }
 
+float StartEnemy::get_sprite_scale() {
+    return 0.55f; // size for goblin
+}
+
 BossEnemy::BossEnemy()
     : Enemy("Dragon", 100, 0, {}) {}
 
@@ -29,4 +33,8 @@ void BossEnemy::perform_turn_action(Combatant& player, std::string& feedback_mes
 void BossEnemy::draw(const GameAssets& assets, float scale, float x_pos, float y_pos, float sprite_width, float sprite_height) {
     Texture2D enemy_texture = (health <= max_health / 2) ? assets.dragon_hurt : assets.dragon;
     DrawTexturePro(enemy_texture, {0, 0, (float)enemy_texture.width, (float)enemy_texture.height}, {x_pos, y_pos, sprite_width, sprite_height}, {0, 0}, 0, WHITE);
+}
+
+float BossEnemy::get_sprite_scale() {
+    return 1.35f; // size for dragon
 }
