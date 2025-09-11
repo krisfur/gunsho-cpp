@@ -11,6 +11,7 @@ GameAssets LoadGameAssets() {
     assets.goblin_hurt = LoadTexture("assets/goblin-hurt.png");
     assets.dragon = LoadTexture("assets/dragon.png");
     assets.dragon_hurt = LoadTexture("assets/dragon-hurt.png");
+    assets.icon = LoadImage("assets/icon.png");
     return assets;
 }
 
@@ -24,4 +25,5 @@ void UnloadGameAssets(const GameAssets& assets) {
     UnloadTexture(assets.goblin_hurt);
     UnloadTexture(assets.dragon);
     UnloadTexture(assets.dragon_hurt);
+    UnloadImage(assets.icon);
 }

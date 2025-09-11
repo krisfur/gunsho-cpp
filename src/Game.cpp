@@ -10,6 +10,7 @@ Game::Game(int screenWidth, int screenHeight, const std::string& title)
     InitWindow(screenWidth, screenHeight, title.c_str());
     SetTargetFPS(120);
     assets = LoadGameAssets();
+    SetWindowIcon(assets.icon);
     init_game();
 }
 

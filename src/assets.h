@@ -13,6 +13,7 @@ struct GameAssets {
     Texture2D goblin_hurt;
     Texture2D dragon;
     Texture2D dragon_hurt;
+    Image icon;
 };
 
 GameAssets LoadGameAssets();
