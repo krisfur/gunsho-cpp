@@ -2,6 +2,10 @@
 
 Cowboy Samurai GunSho goes on a quest to slay evildoers while unraveling the mystery of an evil corporation buying out all property on the Wild West.
 
+## Screenshot
+
+![screenshot](./screenshot.png)
+
 ## Files
 
 - `main.cpp`

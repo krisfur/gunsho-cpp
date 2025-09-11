@@ -147,6 +147,26 @@ void Game::draw() {
     float y_pos = GetScreenHeight() / 2.0f - sprite_height / 2.0f;
     DrawTexturePro(player_texture, {0, 0, (float)player_texture.width, (float)player_texture.height}, {40 * scale, y_pos, sprite_width, sprite_height}, {0, 0}, 0, WHITE);
 
+    // Enemy Sprite
+    Texture2D enemy_texture;
+    float enemy_sprite_scale = 1.0f; // Default scale
+    if (dynamic_cast<StartEnemy*>(current_enemy.get())) {
+        enemy_texture = (current_enemy->health <= current_enemy->max_health / 2) ? assets.goblin_hurt : assets.goblin;
+        enemy_sprite_scale = 0.5f; // Half size for goblin
+    } else if (dynamic_cast<BossEnemy*>(current_enemy.get())) {
+        enemy_texture = (current_enemy->health <= current_enemy->max_health / 2) ? assets.dragon_hurt : assets.dragon;
+        enemy_sprite_scale = 1.3f; // 30% larger for dragon
+    } else {
+        // Default or error texture
+        enemy_texture = assets.player; // Fallback, should not happen
+    }
+
+    float enemy_sprite_height = (GetScreenHeight() / 2.5f) * enemy_sprite_scale;
+    float enemy_sprite_width = enemy_sprite_height; // Assuming square sprites
+    float enemy_y_pos = GetScreenHeight() / 2.0f - enemy_sprite_height / 2.0f;
+    float enemy_x_pos = GetScreenWidth() - enemy_sprite_width - (40 * scale); // Position on the right
+    DrawTexturePro(enemy_texture, {0, 0, (float)enemy_texture.width, (float)enemy_texture.height}, {enemy_x_pos, enemy_y_pos, enemy_sprite_width, enemy_sprite_height}, {0, 0}, 0, WHITE);
+
     Vector2 enemy_name_size = MeasureTextEx(assets.font, current_enemy->name.c_str(), 45.0f * scale, 2);
     float enemy_name_x = GetScreenWidth() - enemy_name_size.x - (20 * scale);
     draw_text_with_shadow(current_enemy->name, enemy_name_x, 20 * scale, 45.0f * scale, WHITE, assets.font);
