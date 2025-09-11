@@ -1,12 +1,11 @@
 #include "Game.h"
+#include "Combatant.h"
 #include <numeric>
 #include <algorithm>
-
-Combatant::Combatant(std::string name, int health, int dice_pool, const std::vector<Ability>& abilities)
-    : name(name), health(health), max_health(health), dice_pool_count(dice_pool), abilities(abilities) {}
+#include <memory>
 
 Game::Game(int screenWidth, int screenHeight, const std::string& title)
-    : scale(1.0f), turn(TurnState::PLAYER_TURN), needs_dice_roll(true), transition_timer(0.0f) {
+    : scale(1.0f), turn(TurnState::PLAYER_TURN), needs_dice_roll(true), transition_timer(0.0f), current_level(1) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, title.c_str());
     SetTargetFPS(120);
@@ -21,11 +20,19 @@ Game::~Game() {
 
 void Game::init_game() {
     player = Combatant("GunSho", 100, 4, get_default_player_abilities());
-    enemy = Combatant("Enemy", 50, 0, get_enemy_abilities());
+    load_enemy(current_level);
     turn = TurnState::PLAYER_TURN;
     needs_dice_roll = true;
     feedback_message = "Your turn! Press 1-3, or Space to skip.";
     transition_timer = 0.0f;
+}
+
+void Game::load_enemy(int level) {
+    if (level == 1) {
+        current_enemy = std::make_unique<StartEnemy>();
+    } else if (level == 2) {
+        current_enemy = std::make_unique<BossEnemy>();
+    }
 }
 
 void Game::run() {
@@ -72,9 +79,14 @@ void Game::update() {
                 if (red_dice >= ability.cost_red && blue_dice >= ability.cost_blue) {
                     apply_ability_effect(ability);
                     current_dice.clear();
-                    if (enemy.health <= 0) {
-                        turn = TurnState::GAME_OVER;
-                        game_over_message = "You Win!";
+                    if (current_enemy->health <= 0) {
+                        if (current_level == 1) {
+                            turn = TurnState::LEVEL_COMPLETE;
+                            game_over_message = "Level Complete! Press Enter for Boss.";
+                        } else {
+                            turn = TurnState::GAME_OVER;
+                            game_over_message = "You Win!";
+                        }
                     } else {
                         turn = TurnState::ENEMY_TURN;
                         transition_timer = 1.5f;
@@ -86,21 +98,29 @@ void Game::update() {
             break;
         }
         case TurnState::ENEMY_TURN: {
-            feedback_message = "Enemy attacks for 25 damage!";
-            player.health = std::max(0, player.health - 25);
+            current_enemy->perform_turn_action(player, feedback_message);
 
             if (player.health <= 0) {
                 turn = TurnState::GAME_OVER;
                 game_over_message = "You Lose!";
-            } else {
+            }
+            else {
                 turn = TurnState::PLAYER_TURN;
                 needs_dice_roll = true;
                 transition_timer = 0.2f;
             }
             break;
         }
+        case TurnState::LEVEL_COMPLETE: {
+            if (IsKeyPressed(KEY_ENTER)) {
+                current_level = 2;
+                init_game();
+            }
+            break;
+        }
         case TurnState::GAME_OVER: {
             if (IsKeyPressed(KEY_ENTER)) {
+                current_level = 1;
                 init_game();
             }
             break;
@@ -127,10 +147,10 @@ void Game::draw() {
     float y_pos = GetScreenHeight() / 2.0f - sprite_height / 2.0f;
     DrawTexturePro(player_texture, {0, 0, (float)player_texture.width, (float)player_texture.height}, {40 * scale, y_pos, sprite_width, sprite_height}, {0, 0}, 0, WHITE);
 
-    Vector2 enemy_name_size = MeasureTextEx(assets.font, enemy.name.c_str(), 45.0f * scale, 2);
+    Vector2 enemy_name_size = MeasureTextEx(assets.font, current_enemy->name.c_str(), 45.0f * scale, 2);
     float enemy_name_x = GetScreenWidth() - enemy_name_size.x - (20 * scale);
-    draw_text_with_shadow(enemy.name, enemy_name_x, 20 * scale, 45.0f * scale, WHITE, assets.font);
-    std::string enemy_hp_text = "HP: " + std::to_string(enemy.health) + "/" + std::to_string(enemy.max_health);
+    draw_text_with_shadow(current_enemy->name, enemy_name_x, 20 * scale, 45.0f * scale, WHITE, assets.font);
+    std::string enemy_hp_text = "HP: " + std::to_string(current_enemy->health) + "/" + std::to_string(current_enemy->max_health);
     Vector2 enemy_hp_size = MeasureTextEx(assets.font, enemy_hp_text.c_str(), 36.0f * scale, 2);
     float enemy_hp_x = GetScreenWidth() - enemy_hp_size.x - (20 * scale);
     draw_text_with_shadow(enemy_hp_text, enemy_hp_x, 50 * scale, 36.0f * scale, WHITE, assets.font);
@@ -162,6 +182,11 @@ void Game::draw() {
             const char* msg = "Enemy is thinking...";
             Vector2 text_size = MeasureTextEx(assets.font, msg, 45.0f * scale, 2);
             draw_text_with_shadow(msg, (GetScreenWidth() - text_size.x) / 2.0f, GetScreenHeight() / 2.0f, 45.0f * scale, WHITE, assets.font);
+            break;
+        }
+        case TurnState::LEVEL_COMPLETE: {
+            Vector2 msg_size = MeasureTextEx(assets.font, game_over_message.c_str(), 75.0f * scale, 2);
+            draw_text_with_shadow(game_over_message, (GetScreenWidth() - msg_size.x) / 2.0f, GetScreenHeight() / 2.0f - 20 * scale, 75.0f * scale, YELLOW, assets.font);
             break;
         }
         case TurnState::GAME_OVER: {
@@ -232,7 +257,7 @@ void Game::apply_ability_effect(const Ability& ability) {
             total_healing = ability.effect.base_healing * blue_value;
         }
 
-        enemy.health = std::max(0, enemy.health - total_damage);
+        current_enemy->health = std::max(0, current_enemy->health - total_damage);
         player.health = std::min(player.max_health, player.health + total_healing);
 
         feedback_message = "Used '" + ability.name + "' for " + std::to_string(total_damage) + " damage and " + std::to_string(total_healing) + " healing!";

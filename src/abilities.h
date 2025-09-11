@@ -22,4 +22,3 @@ struct Ability {
 };
 
 std::vector<Ability> get_default_player_abilities();
-std::vector<Ability> get_enemy_abilities();

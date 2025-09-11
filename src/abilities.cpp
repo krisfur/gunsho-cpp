@@ -27,7 +27,3 @@ static const Ability BLUE_HEAL = {
 std::vector<Ability> get_default_player_abilities() {
     return {STRONG_ATTACK, MIXED_ATTACK, BLUE_HEAL};
 }
-
-std::vector<Ability> get_enemy_abilities() {
-    return {STRONG_ATTACK};
-}
