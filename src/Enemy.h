@@ -6,7 +6,7 @@
 
 class Enemy : public Combatant {
 public:
-    Enemy(std::string name, int health, int dice_pool, const std::vector<Ability>& abilities);
+    Enemy(const std::string& name, int health, int dice_pool, const std::vector<Ability>& abilities);
     virtual ~Enemy() = default;
 
     // Virtual method to allow different enemy types to define their behavior

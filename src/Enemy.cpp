@@ -2,7 +2,7 @@
 #include "Combatant.h"
 #include <algorithm>
 
-Enemy::Enemy(std::string name, int health, int dice_pool, const std::vector<Ability>& abilities)
+Enemy::Enemy(const std::string& name, const int health, const int dice_pool, const std::vector<Ability>& abilities)
     : Combatant(name, health, dice_pool, abilities) {}
 
 StartEnemy::StartEnemy()
@@ -13,9 +13,9 @@ void StartEnemy::perform_turn_action(Combatant& player, std::string& feedback_me
     player.health = std::max(0, player.health - 15);
 }
 
-void StartEnemy::draw(const GameAssets& assets, float scale, float x_pos, float y_pos, float sprite_width, float sprite_height) {
-    Texture2D enemy_texture = (health <= max_health / 2) ? assets.goblin_hurt : assets.goblin;
-    DrawTexturePro(enemy_texture, {0, 0, (float)enemy_texture.width, (float)enemy_texture.height}, {x_pos, y_pos, sprite_width, sprite_height}, {0, 0}, 0, WHITE);
+void StartEnemy::draw(const GameAssets& assets, float scale, const float x_pos, const float y_pos, const float sprite_width, const float sprite_height) {
+    const Texture2D enemy_texture = (health <= max_health / 2) ? assets.goblin_hurt : assets.goblin;
+    DrawTexturePro(enemy_texture, {0, 0, static_cast<float>(enemy_texture.width), static_cast<float>(enemy_texture.height)}, {x_pos, y_pos, sprite_width, sprite_height}, {0, 0}, 0, WHITE);
 }
 
 float StartEnemy::get_sprite_scale() {
@@ -30,9 +30,9 @@ void BossEnemy::perform_turn_action(Combatant& player, std::string& feedback_mes
     player.health = std::max(0, player.health - 20);
 }
 
-void BossEnemy::draw(const GameAssets& assets, float scale, float x_pos, float y_pos, float sprite_width, float sprite_height) {
-    Texture2D enemy_texture = (health <= max_health / 2) ? assets.dragon_hurt : assets.dragon;
-    DrawTexturePro(enemy_texture, {0, 0, (float)enemy_texture.width, (float)enemy_texture.height}, {x_pos, y_pos, sprite_width, sprite_height}, {0, 0}, 0, WHITE);
+void BossEnemy::draw(const GameAssets& assets, float scale, const float x_pos, const float y_pos, const float sprite_width, const float sprite_height) {
+    const Texture2D enemy_texture = (health <= max_health / 2) ? assets.dragon_hurt : assets.dragon;
+    DrawTexturePro(enemy_texture, {0, 0, static_cast<float>(enemy_texture.width), static_cast<float>(enemy_texture.height)}, {x_pos, y_pos, sprite_width, sprite_height}, {0, 0}, 0, WHITE);
 }
 
 float BossEnemy::get_sprite_scale() {

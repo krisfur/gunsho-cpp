@@ -1,7 +1,7 @@
 #include "assets.h"
 
 GameAssets LoadGameAssets() {
-    GameAssets assets;
+    GameAssets assets{};
     assets.background = LoadTexture("assets/background.png");
     assets.player = LoadTexture("assets/player.png");
     assets.player_hurt = LoadTexture("assets/player-hurt.png");

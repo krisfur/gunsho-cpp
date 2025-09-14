@@ -41,14 +41,14 @@ private:
     void draw();
     void roll_dice();
     void apply_ability_effect(const Ability& ability);
-    void draw_text_with_shadow(const std::string& text, float x, float y, float font_size, Color color, Font font);
+    void draw_text_with_shadow(const std::string& text, float x, float y, float font_size, Color color, const Font& font) const;
     void load_enemy(int level);
 
     const int baseScreenWidth = 1920;
     const int baseScreenHeight = 1080;
     float scale;
 
-    GameAssets assets;
+    GameAssets assets{};
 
     Combatant player;
     std::unique_ptr<Enemy> current_enemy;
