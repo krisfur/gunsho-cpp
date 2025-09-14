@@ -28,11 +28,14 @@ void Game::init_game() {
     transition_timer = 0.0f;
 }
 
-void Game::load_enemy(int level) {
-    if (level == 1) {
-        current_enemy = std::make_unique<StartEnemy>();
-    } else if (level == 2) {
-        current_enemy = std::make_unique<BossEnemy>();
+void Game::load_enemy(const int level) {
+    if (level % 2 == 0) {
+        // All even levels (2, 4, 6...) are Bosses
+        current_enemy = std::make_unique<BossEnemy>(); //later this will randomly pick a boss
+    } else {
+        // All odd levels (1, 3, 5...) are StartEnemies
+        // This also handles level 1 correctly.
+        current_enemy = std::make_unique<StartEnemy>(); //later this will randomly pick a normal enemy
     }
 }
 
