@@ -10,7 +10,17 @@ Game::Game(const int screenWidth, const int screenHeight, const std::string& tit
     InitWindow(screenWidth, screenHeight, title.c_str());
     SetTargetFPS(120);
     assets = LoadGameAssets();
-    SetWindowIcon(assets.icon);
+
+    // Resize the icon if it's too large for X11
+    if (assets.icon.width > 256 || assets.icon.height > 256) {
+        Image resizedIcon = ImageCopy(assets.icon);
+        ImageResize(&resizedIcon, 256, 256);
+        SetWindowIcon(resizedIcon);
+        UnloadImage(resizedIcon);
+    } else {
+        SetWindowIcon(assets.icon);
+    }
+
     init_game();
 }
 
