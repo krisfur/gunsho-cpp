@@ -6,6 +6,21 @@ Cowboy Samurai GunSho goes on a quest to slay evildoers while unraveling the mys
 
 ![screenshot](./screenshot.png)
 
+## Building and running
+
+Make sure you have cmake installed. To build:
+
+```bash
+cmake -B build
+cmake --build build
+```
+
+then to run:
+
+```bash
+./build/gunsho-cpp
+```
+
 ## Files
 
 - `main.cpp`
