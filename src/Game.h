@@ -46,7 +46,7 @@ private:
 
     const int baseScreenWidth = 1920;
     const int baseScreenHeight = 1080;
-    float scale;
+    RenderTexture2D render_texture;
 
     GameAssets assets{};
 
